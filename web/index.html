@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAFI LAB - Modern Manager 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <span class="material-icons-round logo-icon">biotech</span>
+                <h1>SAFI LAB</h1>
+            </div>
+            <nav class="nav-menu">
+                <button id="nav-dashboard" class="nav-btn active" onclick="switchTab('dashboard')">
+                    <span class="material-icons-round">dashboard</span> Dashboard
+                </button>
+                <button id="nav-reports" class="nav-btn" onclick="switchTab('reports')">
+                    <span class="material-icons-round">qr_code_2</span> Reports
+                </button>
+                <button id="nav-settings" class="nav-btn" onclick="switchTab('settings')">
+                    <span class="material-icons-round">settings</span> Settings
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="clock" id="live-clock">--:--:--</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <h2 id="page-title">Patient Management</h2>
+                <div class="top-actions">
+                    <button class="icon-btn" onclick="toggleTheme()" title="Toggle Theme">
+                        <span class="material-icons-round" id="theme-icon">dark_mode</span>
+                    </button>
+                    <div class="user-profile">
+                        <span class="material-icons-round">account_circle</span>
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Tab -->
+            <section id="dashboard" class="tab-content active">
+                <div class="dashboard-layout">
+                    <!-- Left: Patient List -->
+                    <div class="card list-card">
+                        <div class="card-header">
+                            <div class="search-bar">
+                                <span class="material-icons-round">search</span>
+                                <input type="text" id="search-input" placeholder="Search patients..."
+                                    onkeyup="filterPatients()">
+                            </div>
+                            <button class="btn-primary small" onclick="loadPatients()">
+                                <span class="material-icons-round">refresh</span>
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table class="patient-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Last Modified</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="patient-table-body">
+                                    <!-- Rows injected by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Right: Patient Form -->
+                    <div class="card form-card">
+                        <div class="card-header">
+                            <h3>Patient Details</h3>
+                            <button class="btn-text" onclick="clearForm()">+ New</button>
+                        </div>
+                        <form id="patient-form" onsubmit="event.preventDefault(); savePatient();">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>ID</label>
+                                    <input type="text" id="p-id" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <input type="text" id="p-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Age</label>
+                                    <input type="number" id="p-age">
+                                </div>
+                                <div class="form-group">
+                                    <label>Gender</label>
+                                    <select id="p-gender">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Child">Child</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Clinic</label>
+                                    <input type="text" id="p-clinic">
+                                </div>
+                                <div class="form-group">
+                                    <label>Doctor</label>
+                                    <input type="text" id="p-doctor">
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Modified</label>
+                                    <input type="text" id="p-date" readonly
+                                        style="background-color: var(--bg-body); opacity: 0.7;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone</label>
+                                    <input type="text" id="p-phone">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label>Email</label>
+                                    <input type="email" id="p-email">
+                                </div>
+                                <!-- Lab Values -->
+                                <div class="form-group">
+                                    <label>ABS</label>
+                                    <input type="text" id="p-abs">
+                                </div>
+                                <div class="form-group">
+                                    <label>CONC</label>
+                                    <input type="text" id="p-conc">
+                                </div>
+                                <div class="form-group">
+                                    <label>TRANS</label>
+                                    <input type="text" id="p-trans">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn-danger" onclick="deletePatient()">
+                                    <span class="material-icons-round">delete</span> Delete
+                                </button>
+                                <button type="submit" class="btn-primary">
+                                    <span class="material-icons-round">save</span> Save
+                                </button>
+                            </div>
+                            <div class="form-extras">
+                                <button type="button" class="btn-secondary full-width" onclick="generateReport()">
+                                    <span class="material-icons-round">settings_suggest</span> Generate Report
+                                </button>
+                                <div class="quick-actions">
+                                    <button type="button" class="btn-outline" onclick="sendEmail()">
+                                        <span class="material-icons-round">email</span> Email
+                                    </button>
+                                    <button type="button" class="btn-outline" onclick="sendWhatsapp()">
+                                        <span class="material-icons-round">chat</span> WhatsApp
+                                    </button>
+                                </div>
+                                <div class="status-container">
+                                    <div class="status-item" id="status-saved">
+                                        <span class="material-icons-round">save</span> Saved
+                                    </div>
+                                    <div class="status-item" id="status-generated">
+                                        <span class="material-icons-round">description</span> Generated
+                                    </div>
+                                    <div class="status-item" id="status-emailed">
+                                        <span class="material-icons-round">email</span> Emailed
+                                    </div>
+                                    <div class="status-item" id="status-whatsapp">
+                                        <span class="material-icons-round">chat</span> WhatsApp
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Tab -->
+            <section id="reports" class="tab-content">
+                <div class="reports-layout">
+                    <div class="card qr-card">
+                        <h3>Report QR Code</h3>
+                        <div class="qr-placeholder" id="qr-display">
+                            <span class="material-icons-round"
+                                style="font-size: 48px; color: var(--text-secondary);">qr_code_scanner</span>
+                            <p>Select a patient and generate report</p>
+                        </div>
+                        <p id="qr-status" class="status-text"></p>
+                    </div>
+                    <div class="card actions-card">
+                        <h3>Actions</h3>
+                        <div class="action-grid">
+                            <button class="btn-action" onclick="printQR()">
+                                <!-- Settings Tab -->
+                                <section id="settings" class="tab-content">
+                                    <div class="card settings-card">
+                                        <h3>Application Settings</h3>
+                                        <div class="setting-item">
+                                            <span>Dark Mode</span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="theme-switch" onchange="toggleTheme()">
+                                                <span class="slider round"></span>
+                                            </label>
+                                        </div>
+                                        <div class="setting-item">
+                                            <span>Language</span>
+                                            <select disabled>
+                                                <option>English</option>
+                                                <option>Arabic</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Action Successful</div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
